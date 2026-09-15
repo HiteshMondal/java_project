@@ -1,0 +1,67 @@
+# First Save
+
+pipeline {
+
+    agent any
+
+ 
+
+    stages {
+
+ 
+
+        stage('Checkout') {
+
+            steps {
+
+                git 'https://github.com/HiteshMondal/java_project.git'
+
+            }
+
+        }
+
+ 
+
+        stage('Build') {
+
+            steps {
+
+                echo "Building application..."
+
+            }
+
+        }
+
+ 
+
+        stage('Test') {
+
+            steps {
+
+                echo "Running tests..."
+
+            }
+
+        }
+
+ 
+
+        stage('Deploy') {
+
+            steps {
+
+                bat 'mkdir C:\\deploy-demo'
+
+ 
+
+            }
+
+        }
+
+    }
+
+}
+
+
+
+
