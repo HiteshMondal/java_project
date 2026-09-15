@@ -1,5 +1,3 @@
-# First Save
-
 pipeline {
 
     agent any
