@@ -2,64 +2,74 @@ pipeline {
 
     agent any
 
- 
+    environment {
+        SRC_DIR    = 'src'
+        BUILD_DIR  = 'bin'
+        MAIN_CLASS = 'com.pcs.SampleClass'
+    }
 
     stages {
 
- 
-
         stage('Checkout') {
-
             steps {
-
-                git 'https://github.com/HiteshMondal/java_project.git'
-
+                git branch: 'main', url: 'https://github.com/HiteshMondal/java_project.git'
             }
-
         }
-
- 
 
         stage('Build') {
-
             steps {
-
                 echo "Building application..."
-
+                script {
+                    if (isUnix()) {
+                        sh """
+                            mkdir -p ${BUILD_DIR}
+                            find ${SRC_DIR} -name "*.java" > sources.txt
+                            javac -d ${BUILD_DIR} @sources.txt
+                        """
+                    } else {
+                        bat """
+                            if not exist ${BUILD_DIR} mkdir ${BUILD_DIR}
+                            dir /s /b ${SRC_DIR}\\*.java > sources.txt
+                            javac -d ${BUILD_DIR} @sources.txt
+                        """
+                    }
+                }
             }
-
         }
-
- 
 
         stage('Test') {
-
             steps {
-
                 echo "Running tests..."
-
+                script {
+                    if (isUnix()) {
+                        sh "java -cp ${BUILD_DIR} ${MAIN_CLASS}"
+                    } else {
+                        bat "java -cp ${BUILD_DIR} ${MAIN_CLASS}"
+                    }
+                }
             }
-
         }
-
- 
 
         stage('Deploy') {
-
             steps {
-
-                bat 'mkdir C:\\deploy-demo'
-
- 
-
+                echo "Deploying application..."
+                script {
+                    if (isUnix()) {
+                        sh 'mkdir -p /tmp/deploy-demo'
+                    } else {
+                        bat 'if not exist C:\\deploy-demo mkdir C:\\deploy-demo'
+                    }
+                }
             }
-
         }
-
     }
 
+    post {
+        success {
+            echo "Pipeline completed successfully."
+        }
+        failure {
+            echo "Pipeline failed. Check the console output above for details."
+        }
+    }
 }
-
-
-
-
